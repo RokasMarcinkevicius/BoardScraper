@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup as soup  # HTML data structure
 from urllib.request import urlopen as uReq  # Web client request
-import urllib.request, urllib.error # .request error handling library (Try, Except)
+import urllib, urllib.request, urllib.error # .request error handling library (Try, Except)
 import datetime
 import os
 import codecs
@@ -35,6 +35,7 @@ except urllib.error.URLError as e: #skip unrequestable pages
     # print('URLError: {}'.format(e.reason))
 else:
     # 200
+
     page_soup = soup(conn.read(), "html.parser", from_encoding="utf-8")
     conn.close() #closing open connection as page is read to memory
     #print(page_soup)
@@ -42,13 +43,17 @@ else:
     #f = codecs.open("data.html", "w", encoding="utf-8")
     #f.write(str(page_soup))
      
-    #ProductShortInfo = page_soup.find("body",{"id":"product"})#.get('class') #short info
+    ProductShortInfo = page_soup.find("body",{"id":"product"}).get('class') #short info
     ProductLongInfo = page_soup.find("section",{"id":"wrapper"}) #full product info
+    #print(ProductShortInfo[7]) #67
+
     Product_Pictures = ProductLongInfo.findAll({"div":"a"},{"class":"thumb-container"})
     for picture in Product_Pictures:
         try:
-            print(picture.a.get('data-image'))
+            #print(picture.a.get('data-image')) #the full image url
+            Product_Image = picture.a.get('data-image')
+            filename = Product_Image.split('/')[-2]
+            #urllib.request.urlretrieve(Product_Image, filename + '.jpg') #the good one
         except AttributeError:
             pass
-    #Product_Picture = ProductLongInfo#.findAll({"img":"zoom-product"})
-    #print(Product_Picture)
+   
