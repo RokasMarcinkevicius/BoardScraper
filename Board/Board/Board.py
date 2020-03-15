@@ -4,6 +4,22 @@ import urllib.request, urllib.error # .request error handling library (Try, Exce
 import datetime
 import os
 import codecs
+import json
+
+#creates main folder with date of scrape
+now = datetime.datetime.now()
+dirName = now.strftime("%H-%M-%S_%d-%m-%y")
+#out_filename = dirName + "/boards.csv"
+headers = "Product_id,Product_name,Product_price,Product_category,ProductDirName,Product_description\n"
+try:
+    os.mkdir(dirName)
+    print("Directory " , dirName , " created  ") #creates main dir
+    #f = codecs.open(out_filename, "w", encoding="utf-8") #creates main write file in main dir
+    #f.write(headers)
+    #https://stackabuse.com/reading-and-writing-json-to-a-file-in-python/
+except FileExistsError:
+    print("Directory " , dirName , " already exists")
+
 
 page_url = ('https://boards.lt/en/home/10680-22836-nitro-2020-squash-snowboard.html')
 print(page_url)
@@ -21,4 +37,18 @@ else:
     # 200
     page_soup = soup(conn.read(), "html.parser", from_encoding="utf-8")
     conn.close() #closing open connection as page is read to memory
-    print(page_soup)
+    #print(page_soup)
+    #write to file for better display
+    #f = codecs.open("data.html", "w", encoding="utf-8")
+    #f.write(str(page_soup))
+     
+    #ProductShortInfo = page_soup.find("body",{"id":"product"})#.get('class') #short info
+    ProductLongInfo = page_soup.find("section",{"id":"wrapper"}) #full product info
+    Product_Pictures = ProductLongInfo.findAll({"div":"a"},{"class":"thumb-container"})
+    for picture in Product_Pictures:
+        try:
+            print(picture.a.get('data-image'))
+        except AttributeError:
+            pass
+    #Product_Picture = ProductLongInfo#.findAll({"img":"zoom-product"})
+    #print(Product_Picture)
